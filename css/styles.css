@@ -1,0 +1,176 @@
+/* ----------------------
+   Общий стиль документа
+----------------------- */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background-color: #4a90e2;
+  color: white;
+  padding: 20px;
+  text-align: left;
+}
+
+h1, h2, h3 {
+  margin: 0 0 10px 0;
+}
+
+/* ----------------------
+   Стили для формы добавления задачи
+----------------------- */
+#task-form {
+  background-color: white;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 700px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#task-form .form-row {
+  display: flex;
+  gap: 10px;
+}
+
+#task-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#add-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#add-btn:hover {
+  background-color: #357abd;
+}
+
+/* ----------------------
+   Стиль для доски задач
+----------------------- */
+.board {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ----------------------
+   Стиль для колонок
+----------------------- */
+.column {
+  background-color: #e2e6ea;
+  border-radius: 10px;
+  padding: 10px;
+  width: 220px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.column h3 {
+  text-align: center;
+}
+
+/* ----------------------
+   Стиль для задач
+----------------------- */
+.task {
+  background-color: white;
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  cursor: grab;
+  transition: transform 0.1s;
+}
+
+.task:hover {
+  transform: scale(1.02);
+}
+
+/* ----------------------
+   Контейнер для задач в колонке
+----------------------- */
+.tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ----------------------
+   Стиль кнопки Очистить
+----------------------- */
+.clear-btn {
+  margin-top: 10px;
+  padding: 8px;
+  border: none;
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clear-btn:hover {
+  background-color: #c0392b;
+}
+
+
+/* ----------------------
+   Стиль для колонок по статусам
+----------------------- */
+.column[data-status="backlog"] {
+  border-left: 6px solid #3498db; /* синий для Бэклога */
+}
+
+.column[data-status="in-progress"] {
+  border-left: 6px solid #f1c40f; /* желтый для В процессе */
+}
+
+.column[data-status="done"] {
+  border-left: 6px solid #2ecc71; /* зеленый для Готово */
+}
+
+.column[data-status="trash"] {
+  border-left: 6px solid #e74c3c; /* красный для Корзины */
+}
+
+/* ----------------------
+   Стили для карточек задач по статусу
+   (можно слегка оттенять фон)
+----------------------- */
+.column[data-status="backlog"] .task {
+  background-color: #ecf5fb; /* светло-синий */
+}
+
+.column[data-status="in-progress"] .task {
+  background-color: #fff9e6; /* светло-желтый */
+}
+
+.column[data-status="done"] .task {
+  background-color: #eafaf1; /* светло-зеленый */
+}
+
+.column[data-status="trash"] .task {
+  background-color: #fdecea; /* светло-красный */
+}
