@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Список задач</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Список задач</h1>
+  </header>
+  <main>
+    <!-- Форма для добавления задачи -->
+    <form id="task-form">
+      <h2>Новая задача</h2>
+      <div class="form-row">
+        <input type="text" placeholder="Название задачи..." id="task-input" required>
+        <button type="submit" id="add-btn">+ Добавить</button>
+      </div>
+    </form>
+
+    <!-- Доска задач с колонками -->
+    <section class="board" id="board">
+      <div class="column" data-status="backlog">
+        <h3>Бэклог</h3>
+        <div class="tasks-container">
+          <div class="task">Выучить JS</div>
+          <div class="task">Выучить React</div>
+          <div class="task">Сделать домашку</div>
+        </div>
+      </div>
+
+      <div class="column" data-status="in-progress">
+        <h3>В процессе</h3>
+        <div class="tasks-container">
+          <div class="task">Выпить смузи</div>
+          <div class="task">Полить воды</div>
+        </div>
+      </div>
+
+      <div class="column" data-status="done">
+        <h3>Готово</h3>
+        <div class="tasks-container">
+          <div class="task">Позвонить маме</div>
+          <div class="task">Погладить кота</div>
+        </div>
+      </div>
+
+      <div class="column" data-status="trash">
+        <h3>Корзина</h3>
+        <div class="tasks-container">
+          <div class="task">Сходить погулять</div>
+          <div class="task">Прочитать Войну и Мир</div>
+        </div>
+        <button class="clear-btn">✖ Очистить</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
