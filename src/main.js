@@ -18,6 +18,6 @@ render(formComponent, taskFormContainer);
 
 const tasksBoardPresenter = new TasksBoardPresenter({
   boardContainer: boardContainer,
-  taskModel: taskModel
+  tasksModel: taskModel
 });
 tasksBoardPresenter.init();

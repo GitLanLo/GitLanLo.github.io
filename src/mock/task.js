@@ -5,7 +5,7 @@ export const mockTasks = [
   { id: 4, title: 'Выпить смузи', status: 'in-progress' },
   { id: 5, title: 'Полить цветы', status: 'done' },
   { id: 6, title: 'Позвонить маме', status: 'done' },
-  { id: 7, title: 'Погладить кота', status: 'trash' },
-  { id: 8, title: 'Прочитать Войну и Мир', status: 'trash' },
+  { id: 7, title: 'Погладить кота', status: 'done' },
+  { id: 8, title: 'Прочитать Войну и Мир', status: 'done' },
   { id: 9, title: 'Сходить погулять', status: 'backlog' }
 ];

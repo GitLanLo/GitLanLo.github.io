@@ -173,3 +173,16 @@ h1, h2, h3 {
 .column[data-status="trash"] .task {
   background-color: #fdecea; 
 }
+
+/* ----------------------
+   Стили для заглушки "Нет задач"
+----------------------- */
+.no-task {
+  text-align: center;          
+  color: #888888;            
+  font-size: 16px;             
+  padding: 10px 0;             
+  margin: 0;                        
+  border: 1px dashed #afacac; 
+  border-radius: 8px;  
+}
