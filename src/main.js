@@ -2,14 +2,16 @@ import HeaderComponent from './view/header-component.js';
 import FormAddTaskComponent from './view/form-add-task-component.js';
 import {render, RenderPosition} from './framework/render.js';
 import TasksBoardPresenter from './presenter/tasks-board-presenter.js';
-import TaskModel from './model/task-model.js';
+import TasksModel from './model/task-model.js';
 import { generateID } from './utils.js';
+import TasksApiService from './tasks-api-service.js';
 
+const END_POINT = 'https://68f27eabb36f9750deecd33e.mockapi.io'; 
 const innerContainer = document.querySelector('.task-list__inner');
 const taskFormContainer = document.querySelector('.task-form');
 const boardContainer = document.querySelector('.board');
 
-const taskModel = new TaskModel();
+const tasksModel = new TasksModel ({ tasksApiService: new TasksApiService (END_POINT)}); 
 
 const headerComponent = new HeaderComponent();
 render(headerComponent, innerContainer, RenderPosition.AFTERBEGIN);
@@ -40,6 +42,6 @@ formComponent.element.addEventListener('submit', (evt) => {
 
 const tasksBoardPresenter = new TasksBoardPresenter({
   boardContainer: boardContainer,
-  tasksModel: taskModel
+  tasksModel: tasksModel
 });
 tasksBoardPresenter.init();

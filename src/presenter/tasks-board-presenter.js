@@ -1,26 +1,59 @@
-import {render} from '../framework/render.js';
+import { render } from '../framework/render.js';
 import BoardComponent from '../view/task-board-component.js';
 import TaskListComponent from '../view/task-list-component.js';
 import TaskComponent from '../view/task-component.js';
 import ClearButtonComponent from '../view/clear-button-component.js';
 import NoTaskComponent from '../view/no-task-component.js';
-import {Status, StatusLabel} from '../const.js';
+import LoadingViewComponent from '../view/loading-view-component.js';
+import { Status, StatusLabel, UserAction, UpdateType } from '../const.js';
 
 export default class TasksBoardPresenter {
   #boardContainer = null;
   #tasksModel = null;
   #boardComponent = new BoardComponent();
   #clearButtonComponent = null;
+  #loadingComponent = new LoadingViewComponent();
 
-  constructor({boardContainer, tasksModel}) {
+  constructor({ boardContainer, tasksModel }) {
     this.#boardContainer = boardContainer;
     this.#tasksModel = tasksModel;
 
-    this.#tasksModel.addObserver(this.#handleModelChange.bind(this));
+    // подписка на события модели
+    this.#tasksModel.addObserver(this.#handleModelEvent);
   }
 
-  init() {
+  // показываем загрузку и ждём init модели
+  async init() {
     render(this.#boardComponent, this.#boardContainer);
+    render(this.#loadingComponent, this.#boardComponent.element);
+    await this.#tasksModel.init();
+  }
+
+  // обработчик событий модели (наблюдатель)
+  #handleModelEvent = (event, payload) => {
+    switch (event) {
+      case UpdateType.INIT:
+      case UserAction.ADD_TASK:
+      case UserAction.UPDATE_TASK:
+      case UserAction.DELETE_TASK:
+        this.#clearBoard();
+        this.#renderBoard();
+        if (this.#clearButtonComponent) {
+          this.#clearButtonComponent[
+            this.#tasksModel.hasTrashTasks() ? 'enable' : 'disable'
+          ]();
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  get tasks() {
+    return this.#tasksModel.tasks;
+  }
+
+  #renderBoard() {
     const columnsContainer = this.#boardComponent.element;
 
     for (const status of Object.values(Status)) {
@@ -28,59 +61,32 @@ export default class TasksBoardPresenter {
     }
   }
 
-  get tasks() {
-    return this.#tasksModel.tasks;
-  }
-
   #renderTasksList(status, container) {
     const columnComponent = new TaskListComponent({
       status,
       statusLabel: StatusLabel[status],
-      onTaskDrop: this.#handleTaskDrop.bind(this)
+      onTaskDrop: this.#handleTaskDrop.bind(this),
     });
     render(columnComponent, this.#boardComponent.element);
 
     const tasksContainer = columnComponent.element.querySelector('.tasks-container');
-    const tasksForStatus = this.tasks.filter(task => task.status === status);
+    const tasksForStatus = this.tasks.filter((task) => task.status === status);
 
     if (tasksForStatus.length === 0) {
       this.#renderNoTasks(tasksContainer);
     } else {
-      tasksForStatus.forEach(task => this.#renderTask(task, tasksContainer));
+      tasksForStatus.forEach((task) => this.#renderTask(task, tasksContainer));
     }
 
     if (status === Status.TRASH) {
       if (tasksForStatus.length > 0) {
-        const clearButtonComponent = new ClearButtonComponent({
+        this.#clearButtonComponent = new ClearButtonComponent({
           onClick: () => {
             this.#tasksModel.clearTrash();
-          }
+          },
         });
-        render(clearButtonComponent, columnComponent.element);
+        render(this.#clearButtonComponent, columnComponent.element);
       }
-    }
-  }
-
-  #renderClearButton(container) {
-    const trashTasks = this.tasks.filter(task => task.status === Status.TRASH);
-
-    if (trashTasks.length === 0) {
-      if (this.#clearButtonComponent) {
-        this.#clearButtonComponent.removeElement();
-        this.#clearButtonComponent = null;
-      }
-      return;
-    }
-
-    if (!this.#clearButtonComponent) {
-      this.#clearButtonComponent = new ClearButtonComponent({
-        onClick: () => {
-          this.#tasksModel.clearTrash();
-        }
-      });
-      render(this.#clearButtonComponent, container);
-    } else {
-      this.#clearButtonComponent.enable();
     }
   }
 
@@ -90,26 +96,12 @@ export default class TasksBoardPresenter {
   }
 
   #renderTask(task, container) {
-    const taskComponent = new TaskComponent({task});
+    const taskComponent = new TaskComponent({ task });
     render(taskComponent, container);
   }
 
-  #handleModelChange() {
-    this.#clearBoard();
-    const columnsContainer = this.#boardComponent.element;
-
-    for (const status of Object.values(Status)) {
-      this.#renderTasksList(status, columnsContainer);
-    }
-
-    if (this.#clearButtonComponent) {
-      const hasTrash = this.tasks.some(task => task.status === Status.TRASH);
-      hasTrash ? this.#clearButtonComponent.enable() : this.#clearButtonComponent.disable();
-    }
-  }
-
-  #handleTaskDrop(taskId, newStatus, newIndex) {
-    this.#tasksModel.updateTaskStatus(taskId, newStatus, newIndex);
+  #handleTaskDrop(taskId, newStatus /*, newIndex */) {
+    this.#tasksModel.updateTaskStatus(taskId, newStatus);
   }
 
   #clearBoard() {
