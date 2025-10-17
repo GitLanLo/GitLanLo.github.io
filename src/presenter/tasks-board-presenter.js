@@ -33,29 +33,33 @@ export default class TasksBoardPresenter {
   }
 
   #renderTasksList(status, container) {
-  const columnComponent = new TaskListComponent({status, statusLabel: StatusLabel[status]});
-  render(columnComponent, container);
+    const columnComponent = new TaskListComponent({
+      status,
+      statusLabel: StatusLabel[status],
+      onTaskDrop: this.#handleTaskDrop.bind(this)
+    });
+    render(columnComponent, this.#boardComponent.element);
 
-  const tasksContainer = columnComponent.element.querySelector('.tasks-container');
-  const tasksForStatus = this.tasks.filter(task => task.status === status);
+    const tasksContainer = columnComponent.element.querySelector('.tasks-container');
+    const tasksForStatus = this.tasks.filter(task => task.status === status);
 
-  if (tasksForStatus.length === 0) {
-    this.#renderNoTasks(tasksContainer);
-  } else {
-    tasksForStatus.forEach(task => this.#renderTask(task, tasksContainer));
-  }
+    if (tasksForStatus.length === 0) {
+      this.#renderNoTasks(tasksContainer);
+    } else {
+      tasksForStatus.forEach(task => this.#renderTask(task, tasksContainer));
+    }
 
-  if (status === Status.TRASH) {
-    if (tasksForStatus.length > 0) {
-      const clearButtonComponent = new ClearButtonComponent({
-        onClick: () => {
-          this.#tasksModel.clearTrash();
-        }
-      });
-      render(clearButtonComponent, columnComponent.element);
+    if (status === Status.TRASH) {
+      if (tasksForStatus.length > 0) {
+        const clearButtonComponent = new ClearButtonComponent({
+          onClick: () => {
+            this.#tasksModel.clearTrash();
+          }
+        });
+        render(clearButtonComponent, columnComponent.element);
+      }
     }
   }
-}
 
   #renderClearButton(container) {
     const trashTasks = this.tasks.filter(task => task.status === Status.TRASH);
@@ -102,6 +106,10 @@ export default class TasksBoardPresenter {
       const hasTrash = this.tasks.some(task => task.status === Status.TRASH);
       hasTrash ? this.#clearButtonComponent.enable() : this.#clearButtonComponent.disable();
     }
+  }
+
+  #handleTaskDrop(taskId, newStatus, newIndex) {
+    this.#tasksModel.updateTaskStatus(taskId, newStatus, newIndex);
   }
 
   #clearBoard() {

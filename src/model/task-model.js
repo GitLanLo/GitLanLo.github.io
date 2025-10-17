@@ -40,4 +40,25 @@ export default class TaskModel {
     this.#tasks = this.#tasks.filter((task) => task.status !== Status.TRASH);
     this._notifyObservers();
   }
+
+  updateTaskStatus(taskId, newStatus, newIndex) {
+    const fromIdx = this.#tasks.findIndex(task => String(task.id) === taskId);
+    const [task] = this.#tasks.splice(fromIdx, 1);
+    task.status = newStatus;
+
+    const sameStatusIdxs = [];
+    this.#tasks.forEach((t, i) => { if (t.status === newStatus) sameStatusIdxs.push(i); });
+
+    let insertAt = this.#tasks.length;
+    if (sameStatusIdxs.length > 0) {
+      if (newIndex >= sameStatusIdxs.length) {
+        insertAt = sameStatusIdxs[sameStatusIdxs.length - 1] + 1; // после последнего с этим статусом
+      } else {
+        insertAt = sameStatusIdxs[newIndex]; // перед элементом с этим индексом в статусе
+      }
+    }
+
+    this.#tasks.splice(insertAt, 0, task);
+    this._notifyObservers();
+  }
 }
