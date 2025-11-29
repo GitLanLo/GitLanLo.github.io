@@ -28,6 +28,17 @@ function Map({ className, city, points, selectedPoint }: MapProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const map = useMap(mapRef, city);
 
+  // 🔹 НОВЫЙ ЭФФЕКТ: при смене города двигаем центр карты
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
+
+    const { latitude, longitude, zoom } = city.location;
+    map.setView({ lat: latitude, lng: longitude }, zoom);
+  }, [map, city]);
+
+  // существующий эффект с маркерами
   useEffect(() => {
     if (!map) {
       return;

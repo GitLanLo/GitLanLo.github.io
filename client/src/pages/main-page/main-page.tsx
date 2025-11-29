@@ -1,16 +1,27 @@
 import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { CitiesCardList } from '../../components/cities-card-list/cities-card-list';
 import { Logo } from '../../components/logo/logo';
 import { Map } from '../../components/map/map';
-import { FullOffer, OffersList } from '../../types/offer';
+import { CitiesList } from '../../components/cities-list/cities-list';
+import { SortOptions } from '../../components/sort-options/sort-options';
+import { FullOffer } from '../../types/offer';
+import { RootState, AppDispatch } from '../../store';
+import { CITIES_LOCATION, SortOffersType } from '../../const';
+import { changeCity } from '../../store/action';
+import { sortOffers } from '../../utils';
+import { SortType } from '../../types/sort';
 
-type MainPageProps = {
-  rentalOffersCount: number;
-  offersList: OffersList;
-};
+function MainPage() {
+  const dispatch = useDispatch<AppDispatch>();
 
-function MainPage({ rentalOffersCount, offersList }: MainPageProps) {
+  const currentCity = useSelector((state: RootState) => state.city);
+  const allOffers = useSelector((state: RootState) => state.offers);
+
   const [selectedOffer, setSelectedOffer] = useState<FullOffer | null>(null);
+  const [currentSortType, setCurrentSortType] = useState<SortType>(
+    SortOffersType.Popular
+  );
 
   const handleCardMouseEnter = (offer: FullOffer) => {
     setSelectedOffer(offer);
@@ -20,7 +31,21 @@ function MainPage({ rentalOffersCount, offersList }: MainPageProps) {
     setSelectedOffer(null);
   };
 
-  const city = offersList[0].city; // все предложения в Амстердаме
+  const handleCityChange = (cityName: string) => {
+    dispatch(changeCity(cityName));
+    setSelectedOffer(null);
+  };
+
+  const handleSortChange = (sortType: SortType) => {
+    setCurrentSortType(sortType);
+  };
+
+  const filteredOffers = allOffers.filter(
+    (offer) => offer.city.name === currentCity.name
+  );
+
+  const sortedOffers = sortOffers(filteredOffers, currentSortType);
+  const city = currentCity;
 
   return (
     <div className="page page--gray page--main">
@@ -33,7 +58,10 @@ function MainPage({ rentalOffersCount, offersList }: MainPageProps) {
             <nav className="header__nav">
               <ul className="header__nav-list">
                 <li className="header__nav-item user">
-                  <a className="header__nav-link header__nav-link--profile" href="#">
+                  <a
+                    className="header__nav-link header__nav-link--profile"
+                    href="#"
+                  >
                     <div className="header__avatar-wrapper user__avatar-wrapper"></div>
                     <span className="header__user-name user__name">
                       Oliver.conner@gmail.com
@@ -53,15 +81,14 @@ function MainPage({ rentalOffersCount, offersList }: MainPageProps) {
 
       <main className="page__main page__main--index">
         <h1 className="visually-hidden">Cities</h1>
+
         <div className="tabs">
           <section className="locations container">
-            <ul className="locations__list tabs__list">
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item tabs__item--active" href="#">
-                  <span>Amsterdam</span>
-                </a>
-              </li>
-            </ul>
+            <CitiesList
+              cities={CITIES_LOCATION}
+              activeCityName={currentCity.name}
+              onCityChange={handleCityChange}
+            />
           </section>
         </div>
 
@@ -70,12 +97,17 @@ function MainPage({ rentalOffersCount, offersList }: MainPageProps) {
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
               <b className="places__found">
-                {rentalOffersCount} places to stay in Amsterdam
+                {sortedOffers.length} places to stay in {city.name}
               </b>
+
+              <SortOptions
+                currentSortType={currentSortType}
+                onChange={handleSortChange}
+              />
 
               <div className="cities__places-list places__list tabs__content">
                 <CitiesCardList
-                  offers={offersList}
+                  offers={sortedOffers}
                   onCardMouseEnter={handleCardMouseEnter}
                   onCardMouseLeave={handleCardMouseLeave}
                 />
@@ -86,7 +118,7 @@ function MainPage({ rentalOffersCount, offersList }: MainPageProps) {
               <Map
                 className="cities__map map"
                 city={city}
-                points={offersList}
+                points={sortedOffers}
                 selectedPoint={selectedOffer}
               />
             </div>
