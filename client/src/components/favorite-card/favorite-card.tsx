@@ -1,51 +1,33 @@
-import { Link } from 'react-router-dom';
-import { AppRoute } from '../../const';
 import { FullOffer } from '../../types/offer';
 
-type CitiesCardProps = {
+type FavoriteCardProps = {
   offer: FullOffer;
-  onMouseEnter?: (offer: FullOffer) => void;
-  onMouseLeave?: () => void;
 };
 
-function CitiesCard({ offer, onMouseEnter, onMouseLeave }: CitiesCardProps) {
+function FavoriteCard({ offer }: FavoriteCardProps) {
   const ratingWidth = `${(offer.rating / 5) * 100}%`;
 
-  const handleMouseEnter = () => {
-    if (onMouseEnter) {
-      onMouseEnter(offer);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (onMouseLeave) {
-      onMouseLeave();
-    }
-  };
-
   return (
-    <article
-      className="cities__card place-card"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <article className="favorites__card place-card">
       {offer.isPremium && (
         <div className="place-card__mark">
           <span>Premium</span>
         </div>
       )}
-      <div className="cities__image-wrapper place-card__image-wrapper">
-        <Link to={AppRoute.Offer.replace(':id', offer.id)}>
+
+      <div className="favorites__image-wrapper place-card__image-wrapper">
+        <a href="#">
           <img
             className="place-card__image"
             src={offer.images[0]}
-            width="260"
-            height="200"
+            width="150"
+            height="110"
             alt={offer.title}
           />
-        </Link>
+        </a>
       </div>
-      <div className="place-card__info">
+
+      <div className="favorites__card-info place-card__info">
         <div className="place-card__price-wrapper">
           <div className="place-card__price">
             <b className="place-card__price-value">&euro;{offer.price}</b>
@@ -65,12 +47,14 @@ function CitiesCard({ offer, onMouseEnter, onMouseLeave }: CitiesCardProps) {
             </span>
           </button>
         </div>
+
         <div className="place-card__rating rating">
           <div className="place-card__stars rating__stars">
             <span style={{ width: ratingWidth }}></span>
             <span className="visually-hidden">Rating</span>
           </div>
         </div>
+
         <h2 className="place-card__name">
           <a href="#">{offer.title}</a>
         </h2>
@@ -82,4 +66,4 @@ function CitiesCard({ offer, onMouseEnter, onMouseLeave }: CitiesCardProps) {
   );
 }
 
-export { CitiesCard };
+export { FavoriteCard };
